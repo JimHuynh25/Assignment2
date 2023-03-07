@@ -1,59 +1,183 @@
-#include<iostream>
-#include"Employee.h"
-using namespace std;
+#include "Header.h"
 
+// Constructor
+SingleLinkedList::SingleLinkedList() {
+    head = nullptr;
+    tail = nullptr;
+    numItems = 0;
+}
 
-Employee::Employee(string n, string a)
-	{
-		name = n;
-		address = a;
-	}
+// Overloaded constructor
+SingleLinkedList::SingleLinkedList(Item_Type item) {
+    Node* tempPtr = new Node;
+    tempPtr->item = item;
+    tempPtr->next = nullptr;
+    head = tempPtr;
+    tail = tempPtr;
+    numItems = 1;
+}
 
-void Employee::print()
-	{
-	cout << "Name : " << name << endl;
-	cout << "Address : " << address << endl;
-	}
+void SingleLinkedList::printSingleLinkedList() {
+    Node* tempPtr = new Node;
+    tempPtr = head;
+    while (tempPtr != nullptr) {
+        cout << " " << tempPtr->item.size;
+        tempPtr = tempPtr->next;
+    }
+    cout << endl;
+}
+// Push item to the very front of the list
+void SingleLinkedList::push_front(Item_Type item)
+{
+    Node* newNode = new Node;
+    newNode->item = item;
+    newNode->next = head;
+    numItems++;
+    head = newNode;
+}
 
-ProfessionalEmployee::ProfessionalEmployee(string n, string a, double m) : Employee(n, a)
-	{
-		monthlySalary = m;
-	}
+// Push item to the very end of the list
+void SingleLinkedList::push_back(Item_Type item)
+{
+    Node* newNode = new Node;
+    newNode->item = item;
+    newNode->next = nullptr;
+    numItems++;
+    if (isEmpty()) {
+        head = newNode;
+    }
+    else {
+        Node* tempPtr = head;
+        while (tempPtr != nullptr && tempPtr->next != nullptr) {
+            tempPtr = tempPtr->next;
+        }
+        newNode->next = nullptr;
+        tempPtr->next = newNode;
+        tail = newNode;
+    }
+}
+// Remove the first item in the list
+void SingleLinkedList::pop_front()
+{
+    if (head == nullptr)
+    {
+        return;
+    }
+    else {
+        Node* tempPtr = head;
+        head = head->next;
+        delete tempPtr;
+        numItems--;
+    }
+}
+// Remove the last item in the list
+void SingleLinkedList::pop_back()
+{
+    if (head == nullptr)
+    {
+        return;
+    }
+    else {
+        Node* tempPtr = head;
+        Node* previousPtr = nullptr;
+        while (tempPtr->next != nullptr) {
+            previousPtr = tempPtr;
+            tempPtr = tempPtr->next;
+        }
+        delete tempPtr;
+        previousPtr->next = nullptr;
+        tail = previousPtr;
+        numItems--;
+    }
+}
 
-double ProfessionalEmployee::weeklySalary()
-	{
-		return monthlySalary / 4;
-	}
+//Return true if empty, false otherwise
+bool SingleLinkedList::isEmpty()
+{
+    if (head == nullptr)
+    {
+        return true;
+    }
+    else return false;
+}
+// Inserts item at a specific index
+void SingleLinkedList::insert(size_t index, const Item_Type& item)
+{
+    if (index < 0)
+    {
+        cout << "Index should be a positive number" << endl;
+        return;
+    }
+    else if (index >= numItems)
+    {
+        push_back(item);
+    }
+    else
+    {
+        Node* newNode = new Node;
+        newNode->item = item;
 
-int ProfessionalEmployee::vacations()
-	{
-		return 23;
-	}
+        Node* tempPtr = head;
 
-double ProfessionalEmployee:: insurance()
-	{
-		return (2.0 * monthlySalary) / 3.0;
-	}
+        Node* previousPtr = nullptr;
 
+        for (size_t i = 0; i < index; i++)
+        {
+            previousPtr = tempPtr;
 
-NonProfessionalEmployee::NonProfessionalEmployee(string n, string a, double w, double h) : Employee(n, a)
-	{
-		timeWork = w;
-		hourRate = h;
-	}
+            tempPtr = tempPtr->next;
+        }
+        previousPtr->next = newNode;
+        newNode->next = tempPtr;
+        numItems++;
+    }
+}
 
-	//overriding the virtual methods of parent class
-double NonProfessionalEmployee :: weeklySalary()
-	{
-		return timeWork * hourRate;
-	}
+// Returns true if the item is removed. false otherwise
+bool SingleLinkedList::remove(size_t index)
+{
+    if (index < 0 || index > numItems)
+    {
+        cout << "Index is out of range" << endl;
+        return false;
+    }
+    else if (index == 0) {
+        pop_front();
+        return true;
+    }
+    else {
+        Node* tempPtr = head;
+        Node* previousPtr = nullptr;
+        tempPtr = head;
+        for (size_t i = 0; i < index; i++)
+        {
+            previousPtr = tempPtr;
+            tempPtr = tempPtr->next;
+            if (i == index - 1)
+            {
+                previousPtr->next = tempPtr->next;
+                delete tempPtr;
+            }
+        }
+        numItems--;
+        return true;
+    }
+}
 
-int NonProfessionalEmployee:: vacations()
-	{
-	return 12;
-	}
-
-double NonProfessionalEmployee :: insurance()
-	{
-		return weeklySalary() / 2.0;
-	}
+// Return index of found item. if not found, returns the size
+size_t SingleLinkedList::find(const Item_Type& item)
+{
+    Node* tempPtr = head;
+    size_t index = 0;
+    while (!isEmpty()) {
+        if (tempPtr->item.size == item.size)
+        {
+            return index;
+        }
+        else {
+            index++;
+            tempPtr = tempPtr->next;
+        }
+    }
+    return numItems;
+}
